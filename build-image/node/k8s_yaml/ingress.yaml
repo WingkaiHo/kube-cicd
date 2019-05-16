@@ -1,0 +1,13 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: npm-taobao-org-cache
+spec:
+  rules:
+  - host: npm-taobao-org-cache.xxx.local
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: npm-taobao-org-cache
+          servicePort: 80

@@ -1,0 +1,59 @@
+---
+apiVersion: apps/v1beta1
+kind: StatefulSet
+metadata:
+  name: npm-taobao-org-cache
+spec:
+  updateStrategy:
+    type: OnDelete
+  serviceName: npm-taobao-org-cache
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: npm-taobao-org-cache
+    spec:
+      nodeSelector:
+          classify: "cpu"
+      initContainers:
+      - name: chown-npm-taobao-org-cache-storage
+        image: nginx:1.13
+        command: ['sh', '-c', 'chown -R nginx:nginx /var/nginx/cache']
+        volumeMounts:
+        - name: cache-storage
+          mountPath: /var/nginx/cache
+      containers:
+      - name: npm-taobao-org-cache
+        image: nginx:1.13
+        volumeMounts:
+        - name: cache-storage
+          mountPath: /var/nginx/cache
+        - name: nginx-conf
+          mountPath: /etc/nginx/nginx.conf
+          subPath: nginx.conf
+        ports:
+        - name: http
+          containerPort: 80 
+        resources:
+          requests:
+            memory: 200Mi
+            cpu: 200m
+          limits:
+            memory: 500Mi
+            cpu: 500m
+      volumes:
+      - name: nginx-conf
+        secret:
+          secretName: npm-taobao-org-cache 
+          items:
+          - key: nginx.conf
+            path: nginx.conf
+  volumeClaimTemplates:
+  - metadata:
+        name: cache-storage
+    spec:
+      storageClassName: "ceph-rbd"
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 15Gi
