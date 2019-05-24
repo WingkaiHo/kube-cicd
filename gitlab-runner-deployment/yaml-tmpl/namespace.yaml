@@ -1,0 +1,4 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: __YOUR_GITLAB_BUILD_NAMESPACE__

@@ -1,0 +1,42 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    app: gitlab-ci-runner
+  name: gitlab-ci-runner-scripts
+  namespace: __YOUR_GITLAB_BUILD_NAMESPACE__
+data:
+  run.sh: |
+    #!/bin/bash
+    token=
+    CONFIG_File="/etc/gitlab-runner/config.toml"
+    unregister() {
+        kill %1
+        echo "Unregistering runner ${RUNNER_NAME} ..."
+        /usr/bin/gitlab-ci-multi-runner unregister -t "$(/usr/bin/gitlab-ci-multi-runner list 2>&1 | tail -n1 | awk '{print $4}' | cut -d'=' -f2)" -n ${RUNNER_NAME}
+        exit $?
+    }
+
+    # trap 'unregister' EXIT HUP INT QUIT PIPE TERM
+    # 判断runner是否已经创建
+    if [  -f "$CONFIG_File" ]; then
+        echo "Find token in $CONFIG_File"
+        token=$(grep "token" "$CONFIG_File")	
+    fi
+
+    if [ -z "$token" ]; then
+        echo "Runner do not exist, need to registry new runner....."
+        echo "Registering runner ${RUNNER_NAME} ..."
+        /usr/bin/gitlab-ci-multi-runner register -r ${GITLAB_CI_TOKEN}
+        sed -i 's/^concurrent.*/concurrent = '"${RUNNER_REQUEST_CONCURRENCY}"'/' "$CONFIG_File"
+        echo  '
+        [[runners.kubernetes.volumes.host_path]]
+          name = "docker-sock"
+          mount_path = "/var/run/docker.sock"
+          read_only = false
+          host_path = "/var/run/docker.sock" '  \
+        >> "$CONFIG_File"
+    fi
+    echo "Starting runner ${RUNNER_NAME} ..."
+    /usr/bin/gitlab-ci-multi-runner run -n ${RUNNER_NAME}
+    #wait
