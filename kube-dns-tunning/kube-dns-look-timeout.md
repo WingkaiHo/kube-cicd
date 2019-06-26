@@ -116,3 +116,10 @@ options timeout:2 attempts:3 single-request-reopen
 The outcome is the following kernel patches:
 - "netfilter: nf_conntrack: resolve clash for matching conntracks" fixes the 1st race (accepted).
 - "netfilter: nf_nat: return the same reply tuple for matching CTs" fixes the 2nd race (waiting for a review).
+
+
+#### kube-node-dns部署
+
+```
+$kubectl apply -f kube-node-dns/yaml/ -n kube-system
+```

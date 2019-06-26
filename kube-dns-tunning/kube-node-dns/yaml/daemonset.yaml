@@ -1,0 +1,51 @@
+apiVersion: extensions/v1beta1
+kind: DaemonSet
+metadata:
+  name: kube-node-dns
+  namespace: kube-system 
+spec:
+  updateStrategy:
+    type: "RollingUpdate"
+    rollingUpdate:
+      maxUnavailable: "100%"
+  template:
+    metadata:
+      labels:
+        name: kube-node-dns-ds
+    spec:
+      hostNetwork: true
+      dnsPolicy: Default
+      serviceAccountName: coredns
+      containers:
+      - name: coredns
+        image: docker.io/coredns/coredns:1.1.2
+        imagePullPolicy: IfNotPresent
+        args: [ "-conf", "/etc/coredns/Corefile" ]
+        volumeMounts:
+        - name: config-volume
+          mountPath: /etc/coredns
+        resources:
+          limits:
+            cpu: 1000m
+            memory: 1024Mi
+          requests:
+            cpu: 500m
+            memory: 500Mi
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 50089
+            scheme: HTTP
+            host: 127.0.0.1
+          initialDelaySeconds: 60
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 5
+      volumes:
+      - name: config-volume
+        configMap:
+          name: kube-node-dns
+          items:
+          - key: Corefile
+            path: Corefile
+
