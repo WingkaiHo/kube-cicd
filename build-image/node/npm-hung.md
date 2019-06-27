@@ -38,7 +38,7 @@ $npm --grpc_node_binary_host_mirror=http://npm-taobao-org-cache.you-private-repo
 // 使用公司内网nexus仓库
 $npm set registry http://nexus.you-private-repo.local/repository/npm-proxy/ 
 // distrul走内网npm-taobao-org-cache
-$npm set disturl http://npm-taobao-org-cache.repo.local/dist/
+$npm set disturl http://npm-taobao-org-cache.repo.local/dist/node
 $npm i -verbose
 ```
 

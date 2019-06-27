@@ -12,7 +12,7 @@
 ### 运行脚本生成对应yaml文件
   
 ```
-$ generate-gitlab-runner-yaml.sh autodeploy UQ9Vifdw-Ho9G35xnrE1 git.tuputech.com
+$ generate-gitlab-runner-yaml.sh runner Uaaaa-Ho9xxxxx your.gitlab.url
 ```
 - 参数1：对应gitlab runner部署k8s命名空间
 - 参数2：runner registry token
