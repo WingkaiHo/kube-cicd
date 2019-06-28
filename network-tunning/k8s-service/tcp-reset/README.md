@@ -86,3 +86,6 @@ net.ipv4.tcp_tw_reuse=1
 ```
 $sysctl -p /etc/systl.conf
 ```
+
+参考：
+https://kubernetes.io/blog/2019/03/29/kube-proxy-subtleties-debugging-an-intermittent-connection-reset/
