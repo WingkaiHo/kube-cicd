@@ -1,0 +1,40 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  annotations:
+    kubernetes.io/createdby: rbd-dynamic-provisioner
+    pv.kubernetes.io/bound-by-controller: "yes"
+    pv.kubernetes.io/provisioned-by: kubernetes.io/rbd
+  creationTimestamp: 2018-07-28T03:55:40Z
+  name: pvc-17a8378f-921a-11e8-b9f8-0894ef5a554a
+  resourceVersion: "5303489"
+  selfLink: /api/v1/persistentvolumes/pvc-17a8378f-921a-11e8-b9f8-0894ef5a554a
+  uid: 17d1173e-921a-11e8-85cf-7cd30a558550
+spec:
+  accessModes:
+  - ReadWriteOnce
+  capacity:
+    storage: 10Gi
+  claimRef:
+    apiVersion: v1
+    kind: PersistentVolumeClaim
+    name: mysql-pvc
+    namespace: heyongjia
+    resourceVersion: "5303486"
+    uid: 17a8378f-921a-11e8-b9f8-0894ef5a554a
+  persistentVolumeReclaimPolicy: Delete
+  rbd:
+    fsType: xfs
+    image: kubernetes-dynamic-pvc-17ab264e-921a-11e8-8d88-7cd30a558550
+    keyring: /etc/ceph/keyring
+    monitors:
+    - 172.25.52.205
+    pool: rbd
+    secretRef:
+      name: ceph-secret
+      namespace: kube-system
+    user: admin
+  storageClassName: ceph-rbd
+  volumeMode: Filesystem
+status:
+  phase: Bound

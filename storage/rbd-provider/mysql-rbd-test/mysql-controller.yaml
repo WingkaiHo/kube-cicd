@@ -1,0 +1,37 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: wordpress-mysql
+  labels:
+    dcos-service: wordpress-mysql
+    dcos-app: wordpress
+spec:
+  replicas: 1 # tells deployment to run 2 pods matching the template
+  revisionHistoryLimit: 10
+  minReadySeconds: 300
+  strategy:
+    type: Recreate
+  template: # create pods using pod definition in this template
+    metadata:
+      labels:
+        dcos-service: wordpress-mysql
+        dcos-app: wordpress
+    spec:
+      nodeSelector:
+          kubernetes.io/hostname: k8s-node-216
+      containers:
+      - name: wordpress-mysql
+        image: private-registry.k8s.tuputech.com/system/mysql:5.7
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: wordpress
+        ports:
+        - containerPort: 3306
+        volumeMounts:
+        - mountPath: /var/lib/mysql
+          name: mysql-persistent-storage
+      volumes:
+      - name: mysql-persistent-storage
+        persistentVolumeClaim:
+          claimName: mysql-pvc
+
